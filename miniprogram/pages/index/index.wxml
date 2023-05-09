@@ -1,0 +1,148 @@
+<!--index.wxml-->
+<view class="container" style="background:url('{{bgImageUrl}}');background-size:100%;background-repeat:no-repeat;height: {{aviableWinHeight}};">
+  <!-- style="background:url('../../images/sport.jpeg')" -->
+  <!-- 用户 openid -->
+  <i-message id="message" />
+  <view class="topView" animation="{{toTopAnimation}}">
+    <view class="userStepOrgInfoView">
+      <button open-type="getUserInfo" disabled="{{disableButton}}" bindgetuserinfo="onGetUserInfo" class="userinfo-avatar" style="background-image: url({{avatarUrl}})">{{buttonTipTitle}}</button>
+      <text class="userinfo-nickname">{{nickName}}</text>
+    </view>
+    <view class="userStepOrgInfoView">
+      <view wx:if="{{showSelectOrg}}" class="stepView">
+        <text class="userinfo-Step">{{myStep}}</text>
+        <text class="userinfo-Step-Tag">steps</text>
+      </view>
+
+      <picker wx:if="{{showSelectOrg}}" mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{multiIndex}}" range-key="name" range="{{multiArray}}">
+        <view class="picker">
+          {{selectOrgTitle}}{{orgInfo.companyName}} - {{orgInfo.departName}}
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view wx:if="{{!disableButton}}" style="background-color: rgba(255, 255, 255, 0.8);border-radius: 10%;">
+    <text class="userinfo-nickname">
+    Welcome to "Team Walk"
+    
+<text class="tips">1.Click the avatar to authorize the sports data
+
+2.Choose the company and your team
+
+3.Sync data daily
+
+4.Work with teammates to compete with other teams</text> 
+Love sports, love life!
+    </text>
+  </view>
+
+  <i-tabs wx:if="{{showData}}" current="{{ current }}" i-class="tabs" color="#000000" bindchange="handleChange">
+    <i-tab i-class="{{current == 'tabPerson'?'itab':'itab-normal'}}" key="tabPerson" title="{{stPersonTitle}}"></i-tab>
+    <i-tab i-class="{{current == 'tabGroup'?'itab':'itab-normal'}}" key="tabGroup" title="{{stDepartTitle}}"></i-tab>
+    <i-tab i-class="{{current == 'tabCompany'?'itab':'itab-normal'}}" key="tabCompany" title="{{stCompanyTitle}}"></i-tab>
+  </i-tabs>
+
+  <view wx:if="{{showData}}">
+    <i-row wx:if="{{current != 'tabPerson'}}" i-class="demo-row-bg">
+      <i-col span="4" i-class="demo-title"> </i-col>
+      <i-col span="10" i-class="demo-title">Total</i-col>
+      <i-col span="8" i-class="demo-title">Avg.</i-col>
+      <i-col span="2" i-class="demo-title"></i-col>
+    </i-row>
+    <i-row i-class="{{current == 'tabPerson'?'demo-row demo-row-chart':'demo-row-nonperson'}}" wx:if="{{current != 'tabPerson'}}">
+      <i-col span="{{current != 'tabPerson'?4:4}}" i-class="demo-col">{{tpTodayTitle}}</i-col>
+      <i-col span="{{current != 'tabPerson'?10:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <!-- <view class="demo-col-tag">Total</view> -->
+          <view class="demo-value">{{showInfo.r0c1}}</view>
+        </view>
+      </i-col>
+      <i-col wx:if="{{current != 'tabPerson'}}" span="{{current != 'tabPerson'?8:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <!-- <view class="demo-col-tag">Avg.</view> -->
+          <view class="demo-value">{{showInfo.r0c2}}</view>
+        </view>
+      </i-col>
+
+    </i-row>
+    <i-row i-class="{{current == 'tabPerson'?'demo-row demo-row-chart-person':'demo-row-nonperson'}}">
+      <i-col span="{{current != 'tabPerson'?4:8}}" i-class="demo-col">{{tpWeekTitle}}</i-col>
+      <i-col span="{{current != 'tabPerson'?10:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <view wx:if="{{current == 'tabPerson'}}" class="demo-col-tag">Total</view>
+          <view class="demo-value">{{showInfo.r1c1}}</view>
+        </view>
+      </i-col>
+      <i-col span="{{current != 'tabPerson'?8:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <view wx:if="{{current == 'tabPerson'}}" class="demo-col-tag">Avg.</view>
+          <view class="demo-value">{{showInfo.r1c2}}</view>
+        </view>
+      </i-col>
+    </i-row>
+    <i-row wx:if="{{current == 'tabPerson' &&  showWeekChart}}" i-class="chartParent">
+      <view class="echarts-container">
+        <ec-canvas class="ec-canvas" id="mychart-dom-week" canvas-id="mychart-week" ec="{{ weekChart }}"></ec-canvas>
+      </view>
+    </i-row>
+    <i-row i-class="{{current == 'tabPerson'?'demo-row demo-row-chart':'demo-row-nonperson'}}">
+      <i-col span="{{current != 'tabPerson'?4:8}}" i-class="demo-col">
+        <view id="currentMonthView">
+          {{tpMonthTitle}}
+        </view>
+      </i-col>
+      <i-col span="{{current != 'tabPerson'?10:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <view wx:if="{{current == 'tabPerson'}}" class="demo-col-tag">Total</view>
+          <view class="demo-value">{{showInfo.r2c1}}</view>
+        </view>
+      </i-col>
+      <i-col span="{{current != 'tabPerson'?8:8}}" i-class="demo-col">
+        <view class="{{current == 'tabPerson'?'demo-col-view':''}}">
+          <view wx:if="{{current == 'tabPerson'}}" class="demo-col-tag">Avg.</view>
+          <view class="demo-value">{{showInfo.r2c2}}</view>
+        </view>
+      </i-col>
+    </i-row>
+    <view wx:if="{{current == 'tabPerson' && showMonthChart}}" class="chartParent">
+      <view class="echarts-container">
+        <ec-canvas class="ec-canvas" id="mychart-dom-month" canvas-id="mychart-month" ec="{{ monthChart }}"></ec-canvas>
+      </view>
+    </view>
+  </view>
+  <scroll-view wx:if="{{current != 'tabPerson'}}" scroll-y style="height: {{scrollViewHeight}};">
+    <view wx:if="{{current == 'tabCompany'}}">
+      <view id="DepartSort" class="sort">{{sortDepartTitle}}</view>
+      <wux-segmented-control wux-class="wux-seg" current="{{ seg_current_depart }}" controlled values="{{ [tpTodayTitle, tpWeekTitle, tpMonthTitle] }}" bind:change="departSegmentControlOnChange" />
+      <view wx:for="{{departSortList}}" wx:key="index">
+        <template is="{{'d0'}}" data="{{item}}" />
+      </view>
+    </view>
+
+    <view wx:if="{{current != 'tabPerson'}}">
+      <view id="PersonSort" class="sort">{{sortPersonTitle}}</view>
+      <wux-segmented-control wux-class="wux-seg" current="{{ current == 'tabGroup'?seg_current:seg_company_current }}" controlled values="{{ [tpTodayTitle, tpWeekTitle, tpMonthTitle] }}" bind:change="segmentControlOnChange" />
+      <view wx:for="{{sortList}}" wx:key="index">
+        <template is="{{'t0'}}" data="{{item}}" />
+      </view>
+    </view>
+
+
+    <template name="t0">
+      <view class="{{item.isMe?'sortRowIsMe':'sortRow'}}">
+        <text class="sort0"> {{item.index}} </text>
+        <text class="sort1"> {{item.name}} </text>
+        <text class="sort2"> {{item.step}} </text>
+      </view>
+    </template>
+    <template name="d0">
+      <view class="{{item.isMe?'sortRowIsMe':'sortRow'}}">
+        <text class="sort0"> {{item.index}} </text>
+        <text class="sort1"> {{item.name}} </text>
+        <text class="sort2"> {{item.avgStep}} </text>
+      </view>
+    </template>
+  </scroll-view>
+  <i-spin size="large" fix wx:if="{{ spinShow }}"></i-spin>
+</view>
